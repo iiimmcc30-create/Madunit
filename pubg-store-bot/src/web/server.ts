@@ -27,6 +27,8 @@ import {
 import { faviconSvg, logoSvg, ogSvg, telegramHref } from "./brand";
 import { dash, DASHBOARD_ROOT, escapeHtml, loginPage, page } from "./html";
 import { renderLanding } from "./landing";
+import type { ShopService } from "../shop/service";
+import { handleShopAdmin, handleShopPublic } from "../shop/routes";
 import { saveScrimTemplateForm, scrimDetailHtml, scrimTemplatesHtml, scrimsIndexHtml } from "./scrims";
 
 function send(res: ServerResponse, status: number, html: string, headers?: Record<string, string>) {
@@ -113,6 +115,7 @@ export function startHttpServer(
   db: PrismaClient,
   redis: Redis,
   platform?: BotController,
+  shop?: ShopService,
 ): Server {
   const secret = dashboardSecret(config.BOT_TOKEN, config.DASHBOARD_TOKEN);
 
@@ -179,7 +182,8 @@ export function startHttpServer(
           return;
         }
       }
-      await handle(req, res, config, db, secret, platform);
+      if (shop && (await handleShopPublic(req, res, url, shop, db, secret))) return;
+      await handle(req, res, config, db, secret, platform, shop);
     } catch (error) {
       if (!res.headersSent) {
         const message = error instanceof AppError ? error.userMessage : String(error);
@@ -244,6 +248,7 @@ async function handle(
   db: PrismaClient,
   secret: string,
   platform?: BotController,
+  shop?: ShopService,
 ) {
   const url = new URL(req.url ?? "/", config.WEB_PUBLIC_URL || "http://127.0.0.1");
   const legacy = LEGACY_DASHBOARD[url.pathname];
@@ -327,6 +332,8 @@ async function handle(
       return;
     }
   }
+
+  if (shop && (await handleShopAdmin(req, res, inner, user, shop, db))) return;
 
   if (req.method === "POST" && platform) {
     const handled = await handlePlatformPost(req, res, dashUrl, db, user, platform);

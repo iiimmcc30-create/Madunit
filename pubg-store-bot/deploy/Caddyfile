@@ -14,6 +14,7 @@
 
 	@bot {
 		path /telegram/* /dashboard /dashboard/* /health /ready
+		path /shop /shop/* /api/shop /api/shop/*
 		path /favicon.svg /og.svg /logo.svg
 		path /login /logout /stores /stores/* /subscriptions /subscriptions/* /inquiries /payments /stats /unmatched /scrims/* /scrim-templates/*
 	}

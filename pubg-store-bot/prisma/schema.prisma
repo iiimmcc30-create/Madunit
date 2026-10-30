@@ -63,48 +63,48 @@ enum BuyerRequestStatus {
 }
 
 model Store {
-  id              String      @id @default(cuid())
-  channelId       String?     @unique
-  tradersGroupId  String?
-  title                String      @default("")
-  ownerUsername   String
-  ownerTelegramId String
-  botTelegramId        String?     @unique
-  botUsername          String      @default("")
-  botFirstName         String      @default("")
-  tokenCipher          String?     @db.Text
-  scrimBotTokenCipher  String?     @db.Text
-  scrimBotTelegramId   String?     @unique
-  scrimBotUsername     String?
-  webhookSecret        String      @default("")
-  botEnabled           Boolean     @default(true)
-  listingTemplate      String      @db.Text
-  listingFee           Decimal     @default(0) @db.Decimal(10, 2)
-  paymentInstructions  String      @default("")
-  coverTheme           Json        @default("{}")
-  coverEnabled         Boolean     @default(false)
-  customGlossary       Json        @default("[]")
-  publishMode          PublishMode @default(AUTO)
-  listingSeq           Int         @default(0)
-  listingPrefix        String      @default("A")
-  plan                   StorePlan           @default(MONTHLY)
-  subscriptionStatus     SubscriptionStatus  @default(TRIAL)
+  id                     String                @id @default(cuid())
+  channelId              String?               @unique
+  tradersGroupId         String?
+  title                  String                @default("")
+  ownerUsername          String
+  ownerTelegramId        String
+  botTelegramId          String?               @unique
+  botUsername            String                @default("")
+  botFirstName           String                @default("")
+  tokenCipher            String?               @db.Text
+  scrimBotTokenCipher    String?               @db.Text
+  scrimBotTelegramId     String?               @unique
+  scrimBotUsername       String?
+  webhookSecret          String                @default("")
+  botEnabled             Boolean               @default(true)
+  listingTemplate        String                @db.Text
+  listingFee             Decimal               @default(0) @db.Decimal(10, 2)
+  paymentInstructions    String                @default("")
+  coverTheme             Json                  @default("{}")
+  coverEnabled           Boolean               @default(false)
+  customGlossary         Json                  @default("[]")
+  publishMode            PublishMode           @default(AUTO)
+  listingSeq             Int                   @default(0)
+  listingPrefix          String                @default("A")
+  plan                   StorePlan             @default(MONTHLY)
+  subscriptionStatus     SubscriptionStatus    @default(TRIAL)
   subscriptionExpiresAt  DateTime?
   subscriptionRemindedAt DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  listings        Listing[]
-  referrals       StoreReferral[]
-  homeSellers     Seller[]        @relation("SellerHomeStore")
-  buyerRequests   BuyerRequest[]
-  unmatched       UnmatchedUtterance[]
-  trialClaims     TrialClaim[]
-  subscriptionPayments SubscriptionPayment[]
-  userMemories    UserMemory[]
-  scrimTemplate   ScrimTemplate?
-  scrims          Scrim[]
-  teamRecords     TeamRecord[]
-  tradersMirrors  TradersMirrorMap[]
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  listings               Listing[]
+  referrals              StoreReferral[]
+  homeSellers            Seller[]              @relation("SellerHomeStore")
+  buyerRequests          BuyerRequest[]
+  unmatched              UnmatchedUtterance[]
+  trialClaims            TrialClaim[]
+  subscriptionPayments   SubscriptionPayment[]
+  userMemories           UserMemory[]
+  scrimTemplate          ScrimTemplate?
+  scrims                 Scrim[]
+  teamRecords            TeamRecord[]
+  tradersMirrors         TradersMirrorMap[]
 
   @@index([ownerTelegramId])
   @@index([botEnabled, subscriptionStatus])
@@ -215,17 +215,17 @@ model AuditLog {
 }
 
 model BuyerRequest {
-  id               String             @id @default(cuid())
-  storeId          String
-  store            Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  buyerTelegramId  String
-  budgetMax        Decimal?           @db.Decimal(10, 2)
-  skins            String[]           @default([])
-  binding          String?
-  notes            String             @default("")
-  status           BuyerRequestStatus @default(OPEN)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id              String             @id @default(cuid())
+  storeId         String
+  store           Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  buyerTelegramId String
+  budgetMax       Decimal?           @db.Decimal(10, 2)
+  skins           String[]           @default([])
+  binding         String?
+  notes           String             @default("")
+  status          BuyerRequestStatus @default(OPEN)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   @@index([storeId, status])
   @@index([buyerTelegramId])
@@ -333,44 +333,44 @@ enum TeamTrust {
 }
 
 model ScrimTemplate {
-  id                   String   @id @default(cuid())
-  storeId              String   @unique
-  store                Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  openPhotoFileId      String   @default("")
-  openCaptionEurope    String   @default("") @db.Text
-  openCaptionGulf      String   @default("") @db.Text
-  defaultRules         String   @default("") @db.Text
-  commitAckText        String   @default("") @db.Text
-  committedPhrase      String   @default("ملتزمين")
-  lockText             String   @default("") @db.Text
-  rosterTemplate       String   @default("") @db.Text
-  roomIdText           String   @default("") @db.Text
-  roomResultTemplate   String   @default("") @db.Text
-  thanksText           String   @default("") @db.Text
-  autoApproveProof     Boolean  @default(false)
-  moderatorTelegramIds String[] @default([])
-  organizersGroupId    String?
-  dropsGroupLink       String?
-  postRoomPassToChannel Boolean @default(false)
-  dropsGroupId         String?
-  rosterStartSlot      Int      @default(1)
-  roomIdChannelMode    String   @default("")
-  roomIdLeadMinutes    Int      @default(7)
-  rosterLineFormat     String   @default("{n}- {team}")
-  rosterShowEmpty      Boolean  @default(false)
-  openDetailsText      String   @default("") @db.Text
-  defaultMaps          String[] @default([])
-  dropsUnlockLeadMinutes Int    @default(90)
-  scheduleEnabled      Boolean  @default(false)
-  scheduleTime         String?
-  scheduleKind         ScrimKind?
-  scheduleMaxTeams     Int      @default(16)
-  scheduleRoomCount    Int      @default(1)
-  scheduleOpenLeadMinutes Int   @default(180)
-  scheduleLastRunKey   String?
-  scoring              Json     @default("{}")
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id                      String     @id @default(cuid())
+  storeId                 String     @unique
+  store                   Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  openPhotoFileId         String     @default("")
+  openCaptionEurope       String     @default("") @db.Text
+  openCaptionGulf         String     @default("") @db.Text
+  defaultRules            String     @default("") @db.Text
+  commitAckText           String     @default("") @db.Text
+  committedPhrase         String     @default("ملتزمين")
+  lockText                String     @default("") @db.Text
+  rosterTemplate          String     @default("") @db.Text
+  roomIdText              String     @default("") @db.Text
+  roomResultTemplate      String     @default("") @db.Text
+  thanksText              String     @default("") @db.Text
+  autoApproveProof        Boolean    @default(false)
+  moderatorTelegramIds    String[]   @default([])
+  organizersGroupId       String?
+  dropsGroupLink          String?
+  postRoomPassToChannel   Boolean    @default(false)
+  dropsGroupId            String?
+  rosterStartSlot         Int        @default(1)
+  roomIdChannelMode       String     @default("")
+  roomIdLeadMinutes       Int        @default(7)
+  rosterLineFormat        String     @default("{n}- {team}")
+  rosterShowEmpty         Boolean    @default(false)
+  openDetailsText         String     @default("") @db.Text
+  defaultMaps             String[]   @default([])
+  dropsUnlockLeadMinutes  Int        @default(90)
+  scheduleEnabled         Boolean    @default(false)
+  scheduleTime            String?
+  scheduleKind            ScrimKind?
+  scheduleMaxTeams        Int        @default(16)
+  scheduleRoomCount       Int        @default(1)
+  scheduleOpenLeadMinutes Int        @default(180)
+  scheduleLastRunKey      String?
+  scoring                 Json       @default("{}")
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
 }
 
 model Scrim {
@@ -477,3 +477,120 @@ model TradersMirrorMap {
   @@index([tradersGroupId, tradersMessageId])
 }
 
+// ───────────── Physical-products shop (CJdropshipping) ─────────────
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+enum ShopOrderStatus {
+  PENDING_PAYMENT
+  RECEIPT_UPLOADED
+  PAID
+  CJ_CREATED
+  CJ_FAILED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Product {
+  id            String           @id @default(cuid())
+  cjPid         String           @unique
+  slug          String           @unique
+  titleEn       String
+  titleAr       String           @default("")
+  descriptionAr String           @default("")
+  descriptionEn String           @default("")
+  images        String[]
+  costUsd       Decimal          @db.Decimal(12, 2)
+  markupPercent Decimal          @default(60) @db.Decimal(6, 2)
+  priceSar      Decimal          @db.Decimal(12, 2)
+  /// CJ shipping estimate to SA (SAR) baked into priceSar
+  shippingSar   Decimal          @default(0) @db.Decimal(12, 2)
+  status        ProductStatus    @default(DRAFT)
+  raw           Json?
+  variants      ProductVariant[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model ProductVariant {
+  id         String      @id @default(cuid())
+  productId  String
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cjVid      String      @unique
+  sku        String      @default("")
+  name       String      @default("")
+  image      String?
+  costUsd    Decimal     @db.Decimal(12, 2)
+  priceSar   Decimal     @db.Decimal(12, 2)
+  stock      Int?
+  active     Boolean     @default(true)
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([productId])
+}
+
+model Order {
+  id                String          @id @default(cuid())
+  number            String          @unique
+  status            ShopOrderStatus @default(PENDING_PAYMENT)
+  customerName      String
+  phone             String
+  city              String
+  district          String          @default("")
+  street            String
+  postalCode        String          @default("")
+  notes             String          @default("")
+  subtotalSar       Decimal         @db.Decimal(12, 2)
+  shippingSar       Decimal         @default(0) @db.Decimal(12, 2)
+  totalSar          Decimal         @db.Decimal(12, 2)
+  paymentMethod     String          @default("bank_transfer")
+  paymentRef        String?
+  receiptMime       String?
+  receiptData       Bytes?
+  receiptUploadedAt DateTime?
+  paidAt            DateTime?
+  paidBy            String?
+  cjOrderId         String?
+  cjOrderStatus     String?
+  logisticName      String?
+  trackingNumber    String?
+  trackingStatus    String?
+  lastSyncedAt      DateTime?
+  items             OrderItem[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([status])
+}
+
+model OrderItem {
+  id           String         @id @default(cuid())
+  orderId      String
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId    String
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  title        String
+  quantity     Int
+  unitPriceSar Decimal        @db.Decimal(12, 2)
+
+  @@index([orderId])
+}
+
+model CjSync {
+  id        String   @id @default(cuid())
+  kind      String
+  ref       String?
+  ok        Boolean
+  message   String   @default("")
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  @@index([kind, createdAt])
+}

@@ -43,6 +43,13 @@ const envSchema = z.object({
     .string()
     .optional()
     .default("حوّل 99 ريال لحساب مالك المنصة، ثم أرسل صورة الإيصال هنا من زر تجديد الاشتراك."),
+  CJ_API_KEY: z.string().optional().default(""),
+  CJ_PAY_TYPE: z.coerce.number().int().refine((v) => v === 2 || v === 3).default(3),
+  CJ_DEFAULT_LOGISTIC: z.string().default("CJPacket Liquid Line"),
+  CJ_TOKEN_CACHE_FILE: z.string().optional().default(""),
+  SHOP_USD_TO_SAR: z.coerce.number().positive().default(3.75),
+  SHOP_DEFAULT_MARKUP_PERCENT: z.coerce.number().nonnegative().default(120),
+  SHOP_TRACKING_SYNC_MINUTES: z.coerce.number().nonnegative().default(30),
   LOG_LEVEL: z.string().default("info"),
   NODE_ENV: z.string().default("development"),
 });

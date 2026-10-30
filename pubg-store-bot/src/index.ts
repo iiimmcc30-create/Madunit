@@ -7,6 +7,7 @@ import { createRedis } from "./infra/redis";
 import { createInquiryJobs, createQueuePort, startInquiryWorkers, startScrimWorkers, startSubscriptionWorkers } from "./infra/queue";
 import { createLlmProvider } from "./llm";
 import { startHttpServer } from "./web/server";
+import { ShopService } from "./shop/service";
 
 async function main() {
   const config = loadConfig();
@@ -65,11 +66,36 @@ async function main() {
     (storeId, ownerId, text) => platform.controller.sendStoreMessage(storeId, ownerId, text),
   );
   const scrimWorkers = startScrimWorkers(bullRedis, logger, (now) => platform.tickScrims(now));
-  const httpServer = startHttpServer(config, db, redis, platform.controller);
+  const shop = new ShopService(
+    db,
+    {
+      cjApiKey: config.CJ_API_KEY,
+      usdToSar: config.SHOP_USD_TO_SAR,
+      defaultMarkupPercent: config.SHOP_DEFAULT_MARKUP_PERCENT,
+      defaultLogistic: config.CJ_DEFAULT_LOGISTIC,
+      cjPayType: config.CJ_PAY_TYPE as 2 | 3,
+      tokenCacheFile: config.CJ_TOKEN_CACHE_FILE || undefined,
+    },
+    async (text) => {
+      try {
+        await platform.controller.sendStoreMessage(legacy.id, config.superAdminTelegramId, text);
+      } catch (error) {
+        logger.warn({ err: error }, "shop notify failed");
+      }
+    },
+  );
+  const shopSync =
+    config.CJ_API_KEY && config.SHOP_TRACKING_SYNC_MINUTES > 0
+      ? setInterval(() => {
+          shop.syncTracking().catch((error) => logger.warn({ err: error }, "shop tracking sync failed"));
+        }, config.SHOP_TRACKING_SYNC_MINUTES * 60_000)
+      : null;
+  const httpServer = startHttpServer(config, db, redis, platform.controller, shop);
 
   const shutdown = async (signal: string) => {
     logger.info({ signal }, "shutting down");
     await platform.stopAll();
+    if (shopSync) clearInterval(shopSync);
     httpServer.close();
     await inquiryWorkers.close();
     await subscriptionWorkers.close();

@@ -27,6 +27,8 @@ export function page(title: string, body: string, options?: { nav?: boolean }): 
       <a href="${dash("/scrims")}">السكرمات</a>
       <a href="${dash("/scrim-templates")}">قوالب السكرم</a>
       <a href="${dash("/payments")}">الإيصالات</a>
+      <a href="${dash("/shop")}">المتجر</a>
+      <a href="${dash("/shop/orders")}">طلبات المتجر</a>
       <a href="${dash("/stats")}">الإحصائيات</a>
       <a href="${dash("/unmatched")}">غير مفهومة</a>
       <a href="/">الموقع</a>

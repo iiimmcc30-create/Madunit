@@ -18,7 +18,8 @@
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:studio": "prisma studio",
     "backup": "sh scripts/backup-db.sh",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "shop:seed": "tsx src/shop/seed.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
