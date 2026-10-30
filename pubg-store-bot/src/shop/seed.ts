@@ -15,6 +15,9 @@ interface SeedRow {
   titleAr: string;
   shippingUsd: number;
   markupPercent: number;
+  descriptionAr?: string;
+  /** Set true to publish on seed (otherwise new products stay DRAFT). */
+  publish?: boolean;
 }
 
 async function main() {
@@ -32,7 +35,10 @@ async function main() {
   for (const row of rows) {
     try {
       const detail = await shop.cj().productDetail(row.cjPid);
-      const p = await shop.upsertFromDetail(detail, row.markupPercent, { titleAr: row.titleAr, shippingUsd: row.shippingUsd });
+      let p = await shop.upsertFromDetail(detail, row.markupPercent, { titleAr: row.titleAr, shippingUsd: row.shippingUsd });
+      if (row.descriptionAr && !p.descriptionAr) await db.product.update({ where: { id: p.id }, data: { descriptionAr: row.descriptionAr } });
+      if (row.publish && process.env.SHOP_SEED_PUBLISH === "1" && p.status === "DRAFT") await shop.setPublished(p.id, true);
+      p = await db.product.findUniqueOrThrow({ where: { id: p.id }, include: { variants: true } });
       console.log(`✓ [${row.group}] ${row.cjPid} → ${p.priceSar.toString()} SAR (${p.variants.length} variants, ${p.status})`);
     } catch (error) {
       console.error(`✗ ${row.cjPid}: ${error instanceof Error ? error.message : String(error)}`);

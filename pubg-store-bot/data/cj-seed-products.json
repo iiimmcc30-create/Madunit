@@ -1,5 +1,5 @@
 {
- "_note": "Researched 2026-10-30 via CJ API listV2 (orderBy=1 listedNum desc / orderBy=3 newest) + product/query + freightCalculate to SA (cheapest line, 1 unit). listedNum = number of CJ stores that listed the product (CJ's only public demand metric; no ratings via API). Prices = (cost+shipping)x3.75x2.2, rounded. All seeded as DRAFT.",
+ "_note": "Researched 2026-10-30 via CJ API listV2 (orderBy=1 listedNum desc / orderBy=3 newest) + product/query + freightCalculate to SA (cheapest line, 1 unit). listedNum = number of CJ stores that listed the product (CJ's only public demand metric; no ratings via API). Prices = (cost+shipping)x3.75x2.2, rounded. All seeded as DRAFT. Coolers group added 2026-10-30 via deprecated /product/list (productNameEn search) because listV2 doesn't surface phone coolers.",
  "products": [
   {
    "cjPid": "38A70F8D-BD31-4720-B90D-8094BD174B91",
@@ -13,7 +13,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 49,
-   "variants": 2
+   "variants": 2,
+   "descriptionAr": "جهّز نفسك للفوز! طقم متكامل للاعبي ببجي: ترقرات سريعة الاستجابة للإطلاق والتصويب، قفازات أصابع ضد العرق تخلي لمسك ناعم ودقيق، وحامل يريّح يدك في الجيمات الطويلة. تركيب في ثواني ويناسب أغلب الجوالات.",
+   "publish": true
   },
   {
    "cjPid": "1664111403118108672",
@@ -27,7 +29,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 59,
-   "variants": 4
+   "variants": 4,
+   "descriptionAr": "نقّار أوتوماتيك يضغط على الشاشة بدالك بسرعة ثابتة — مثالي للألعاب اللي تحتاج نقر متكرر وجمع الموارد. يلصق على الشاشة بسهولة وما يحتاج تطبيقات ولا روت.",
+   "publish": true
   },
   {
    "cjPid": "1439527778386055168",
@@ -41,7 +45,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 79,
-   "variants": 2
+   "variants": 2,
+   "descriptionAr": "حوّل جوالك ليد تحكم! أزرار جانبية بتركيب مباشر تعطيك تحكم أسرع ودقة أعلى في ألعاب التصويب، مع قبضة مريحة لليدين.",
+   "publish": true
   },
   {
    "cjPid": "1637712291422547968",
@@ -55,7 +61,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 99,
-   "variants": 2
+   "variants": 2,
+   "descriptionAr": "جويستك مشي ثابت يلصق على الشاشة ويعطيك حركة سلسة ودقيقة في ببجي — تحكم أفضل في الاتجاهات وراحة أكثر لإبهامك.",
+   "publish": true
   },
   {
    "cjPid": "1405709590418558976",
@@ -69,7 +77,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 109,
-   "variants": 1
+   "variants": 1,
+   "descriptionAr": "أزرار ترقر معدنية متينة لببجي: ضغطة واضحة واستجابة فورية للإطلاق والتصويب. خفيفة وتركّب على أغلب الجوالات بدون ما تغطي الشاشة.",
+   "publish": true
   },
   {
    "cjPid": "1763756610213654528",
@@ -83,7 +93,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 149,
-   "variants": 7
+   "variants": 7,
+   "descriptionAr": "يد تحكم بلوتوث لاسلكية تشتغل مع أندرويد وآيفون والكمبيوتر. أزرار مريحة وبطارية تدوم — العب ألعابك المفضلة براحة كونسول.",
+   "publish": true
   },
   {
    "cjPid": "1714538693714784256",
@@ -97,7 +109,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 159,
-   "variants": 5
+   "variants": 5,
+   "descriptionAr": "يد تحكم بلوتوث قابلة للتمديد تمسك جوالك بين يديك مثل الأجهزة المحمولة. اتصال سريع، أزرار دقيقة، وتجربة لعب احترافية في أي مكان.",
+   "publish": true
   },
   {
    "cjPid": "1597165945188405248",
@@ -111,7 +125,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 179,
-   "variants": 5
+   "variants": 5,
+   "descriptionAr": "حامل ذكي يتتبّع وجهك ويدور 360° تلقائياً — مثالي للبث المباشر وتصوير التيك توك والمكالمات. ثبّت جوالك وخلّه يلحقك وين ما تتحرك.",
+   "publish": true
   },
   {
    "cjPid": "1735490206582710272",
@@ -125,7 +141,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 69,
-   "variants": 3
+   "variants": 3,
+   "descriptionAr": "ستاند معدني فخم يدور 360° وقابل لتعديل الزاوية. ثابت على المكتب، يناسب الجوال والآيباد، ومثالي للمشاهدة والبث.",
+   "publish": true
   },
   {
    "cjPid": "1544596715590922240",
@@ -139,7 +157,9 @@
    "deliveryDays": "10-17",
    "markupPercent": 120,
    "proposedPriceSar": 49,
-   "variants": 4
+   "variants": 4,
+   "descriptionAr": "سماعات لاسلكية بشاشة رقمية تعرض نسبة البطارية. صوت واضح، اتصال بلوتوث ثابت، وتصميم خفيف للاستخدام اليومي والألعاب.",
+   "publish": true
   },
   {
    "cjPid": "1426008554720071680",
@@ -153,7 +173,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 159,
-   "variants": 1
+   "variants": 1,
+   "descriptionAr": "قاعدة تبريد مع موزّع USB ورف تخزين — نظّم مكتب الألعاب وخلّ أجهزتك باردة ومشحونة في مكان واحد.",
+   "publish": true
   },
   {
    "cjPid": "2508160837481618800",
@@ -167,7 +189,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 189,
-   "variants": 1
+   "variants": 1,
+   "descriptionAr": "حامل جوال مغناطيسي ينطوي ويتحوّل لأكثر من وضع: ستاند مكتب، حامل للآيباد، أو مقبض باليد. عملي، أنيق، ويتنقل معك بسهولة.",
+   "publish": true
   },
   {
    "cjPid": "1848975196674740224",
@@ -181,7 +205,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 229,
-   "variants": 2
+   "variants": 2,
+   "descriptionAr": "بروجكتر صغير يعرض شاشة جوالك على الجدار بدقة تدعم 1080p — سينما في غرفتك وللسفر والجلسات مع الشباب.",
+   "publish": true
   },
   {
    "cjPid": "1754328093105336320",
@@ -195,7 +221,9 @@
    "deliveryDays": "10-17",
    "markupPercent": 120,
    "proposedPriceSar": 279,
-   "variants": 93
+   "variants": 93,
+   "descriptionAr": "كفر مختلف عن أي كفر: شاشة حبر إلكتروني على ظهر الجوال تعرض صورك وتصاميمك وتتغيّر متى ما تبي — بدون ما تستهلك بطارية تذكر. قطعة ملفتة وهدية مميزة.",
+   "publish": true
   },
   {
    "cjPid": "2097604168725798914",
@@ -209,7 +237,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 149,
-   "variants": 1
+   "variants": 1,
+   "descriptionAr": "سماعة لاسلكية بمشبك أذن مريح وزمن تأخير منخفض للألعاب — تسمع الخطوات وإطلاق النار في وقتها، وتبقى مرتاح لساعات.",
+   "publish": true
   },
   {
    "cjPid": "2099749350739578882",
@@ -223,7 +253,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 109,
-   "variants": 3
+   "variants": 3,
+   "descriptionAr": "سبيكر بلوتوث محمول بإضاءة RGB وصوت قوي — يشعل الجلسات والرحلات، مع مقبض سهل الحمل وبطارية تدوم.",
+   "publish": true
   },
   {
    "cjPid": "2088115397416968193",
@@ -237,7 +269,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 149,
-   "variants": 4
+   "variants": 4,
+   "descriptionAr": "جيمبل جوال مانع للاهتزاز مع عصا سيلفي — فيديوهات ثابتة واحترافية للسفر والمحتوى بدون أي رجفة.",
+   "publish": true
   },
   {
    "cjPid": "2407231105531605100",
@@ -251,7 +285,9 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 109,
-   "variants": 1
+   "variants": 1,
+   "descriptionAr": "بطارية خلفية ليد التحكم بشاشة LED تبيّن نسبة الشحن — العب ساعات أطول بدون ما تشيل اليد للشحن.",
+   "publish": true
   },
   {
    "cjPid": "1628625788713054208",
@@ -265,7 +301,73 @@
    "deliveryDays": "9-14",
    "markupPercent": 120,
    "proposedPriceSar": 239,
-   "variants": 7
+   "variants": 7,
+   "descriptionAr": "بروجكتر مجرّة ونجوم يدور 360° ويحوّل غرفتك لسماء ليلية ساحرة. جو مثالي للنوم والجلسات وغرف الألعاب، وهدية تفرّح أي أحد.",
+   "publish": true
+  },
+  {
+   "cjPid": "1372505446077829120",
+   "group": "cooler",
+   "titleAr": "مبرّد جوال للألعاب مع ستاند ويد تحكم",
+   "titleEn": "Compatible With Apple, Multi-function Mobile Phone USB Game Cooler System Cooling Fan Gamepad Holder Stand Radiator",
+   "listedNum": 866,
+   "costUsd": 2.87,
+   "shippingUsd": 4.86,
+   "logistic": "CJPacket Liquid Line",
+   "deliveryDays": "9-14",
+   "markupPercent": 120,
+   "proposedPriceSar": 69,
+   "variants": 1,
+   "descriptionAr": "لا تخلّ الحرارة توقف قيمك! مبرّد بمروحة تيربو صامتة بسرعتين، مع ستاند وأزرار تحكم تقدر تفصلها عن المبرّد. جوال بارد = أداء ثابت بدون لاق.",
+   "publish": true
+  },
+  {
+   "cjPid": "1356806212833906688",
+   "group": "cooler",
+   "titleAr": "مروحة تبريد H15 للجوال — سلكية أو بشحن",
+   "titleEn": "Creative Mobile Phone Radiator Eat Chicken Artifact",
+   "listedNum": 390,
+   "costUsd": 2.16,
+   "shippingUsd": 4.81,
+   "logistic": "CJPacket Liquid Line",
+   "deliveryDays": "9-14",
+   "markupPercent": 120,
+   "proposedPriceSar": 59,
+   "variants": 4,
+   "descriptionAr": "مروحة تبريد H15 الشهيرة لاعبي ببجي: تبرد الجوال بسرعة وتحافظ على الفريمات ثابتة. متوفرة سلكية أو بشحن، وبلونين أسود وفضي.",
+   "publish": true
+  },
+  {
+   "cjPid": "98110713-748F-4132-BED1-DB4460A16C1D",
+   "group": "cooler",
+   "titleAr": "مبرّد جوال احترافي ألمنيوم وسيراميك",
+   "titleEn": "Mobile phone radiator",
+   "listedNum": 324,
+   "costUsd": 10.25,
+   "shippingUsd": 4.32,
+   "logistic": "CJPacket Liquid Line",
+   "deliveryDays": "9-14",
+   "markupPercent": 120,
+   "proposedPriceSar": 129,
+   "variants": 3,
+   "descriptionAr": "مبرّد احترافي من الألمنيوم والسيراميك بمشبك قوي يناسب جوالات 4–7 إنش. تبريد فعّال وتصميم متين للجيمات الطويلة والشحن أثناء اللعب.",
+   "publish": true
+  },
+  {
+   "cjPid": "1669292816469598208",
+   "group": "cooler",
+   "titleAr": "مبرّد تبريد ثلجي (سيميكوندكتر) بمشبك وإضاءة RGB",
+   "titleEn": "Mobile Phone Cooling Semiconductor Refrigeration Portable Back Clip Fast Radiator",
+   "listedNum": 64,
+   "costUsd": 5.18,
+   "shippingUsd": 7.0,
+   "logistic": "CJPacket Eub Special Line",
+   "deliveryDays": "10-17",
+   "markupPercent": 120,
+   "proposedPriceSar": 109,
+   "variants": 2,
+   "descriptionAr": "تبريد ثلجي حقيقي بتقنية السيميكوندكتر مع مروحة وإضاءة RGB — ينزّل حرارة الجوال بسرعة أثناء اللعب والبث. مشبك خلفي يركب في ثانية ويشتغل بكيبل Type-C.",
+   "publish": true
   }
  ]
 }
