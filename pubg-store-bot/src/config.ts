@@ -50,6 +50,7 @@ const envSchema = z.object({
   SHOP_USD_TO_SAR: z.coerce.number().positive().default(3.75),
   SHOP_DEFAULT_MARKUP_PERCENT: z.coerce.number().nonnegative().default(120),
   SHOP_TRACKING_SYNC_MINUTES: z.coerce.number().nonnegative().default(30),
+  SHOP_ADMIN_CHAT_IDS: z.string().optional().default(""),
   LOG_LEVEL: z.string().default("info"),
   NODE_ENV: z.string().default("development"),
 });
@@ -57,6 +58,7 @@ const envSchema = z.object({
 export type AppConfig = z.infer<typeof envSchema> & {
   ownerUsername: string;
   superAdminTelegramId: string;
+  shopAdminChatIds: string[];
   tokenEncryptionKey: Buffer;
   LLM_MODEL: string;
 };
@@ -64,12 +66,20 @@ export type AppConfig = z.infer<typeof envSchema> & {
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const parsed = envSchema.parse(env);
   const model = parsed.LLM_MODEL.trim() || parsed.OPENAI_MODEL;
+  const superAdminTelegramId = (parsed.SUPER_ADMIN_TELEGRAM_ID || parsed.OWNER_TELEGRAM_ID).trim();
+  // Shop order alerts go to the super admin plus any extra comma-separated ids (deduplicated).
+  const shopAdminChatIds = [
+    ...new Set(
+      [superAdminTelegramId, ...parsed.SHOP_ADMIN_CHAT_IDS.split(/[,\s]+/)].map((id) => id.trim()).filter(Boolean),
+    ),
+  ];
   return {
     ...parsed,
     OPENAI_MODEL: model,
     LLM_MODEL: model,
     ownerUsername: parsed.OWNER_USERNAME.replace(/^@/, ""),
-    superAdminTelegramId: (parsed.SUPER_ADMIN_TELEGRAM_ID || parsed.OWNER_TELEGRAM_ID).trim(),
+    superAdminTelegramId,
+    shopAdminChatIds,
     tokenEncryptionKey: parseTokenEncryptionKey(parsed.TOKEN_ENCRYPTION_KEY, parsed.BOT_TOKEN),
   };
 }

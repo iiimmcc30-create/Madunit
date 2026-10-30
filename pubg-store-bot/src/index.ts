@@ -77,10 +77,12 @@ async function main() {
       tokenCacheFile: config.CJ_TOKEN_CACHE_FILE || undefined,
     },
     async (text) => {
-      try {
-        await platform.controller.sendStoreMessage(legacy.id, config.superAdminTelegramId, text);
-      } catch (error) {
-        logger.warn({ err: error }, "shop notify failed");
+      for (const chatId of config.shopAdminChatIds) {
+        try {
+          await platform.controller.sendStoreMessage(legacy.id, chatId, text);
+        } catch (error) {
+          logger.warn({ err: error, chatId }, "shop notify failed");
+        }
       }
     },
   );
