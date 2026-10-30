@@ -1,0 +1,48 @@
+{
+  "name": "pubg-store-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "بوت تلغرام ذكي لقنوات بيع حسابات ببجي",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:studio": "prisma studio",
+    "backup": "sh scripts/backup-db.sh",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@fontsource/noto-naskh-arabic": "^5.3.0",
+    "@grammyjs/conversations": "^2.1.1",
+    "@grammyjs/storage-redis": "^2.6.0",
+    "@prisma/client": "^6.19.3",
+    "@resvg/resvg-js": "^2.6.2",
+    "bullmq": "^6.3.13",
+    "dotenv": "^18.0.7",
+    "grammy": "^1.46.0",
+    "ioredis": "^6.0.0",
+    "openai": "^7.32.0",
+    "pino": "^10.4.0",
+    "satori": "^0.51.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "prisma": "^6.19.3",
+    "tsx": "^4.23.15",
+    "typescript": "5.8",
+    "vitest": "^5.0.4"
+  }
+}

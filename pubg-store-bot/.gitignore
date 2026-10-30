@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+.env
+backups/*.sql
+backups/*.sql.gz
+backups/*.dump
+*.log
+.DS_Store
+Thumbs.db
+prisma/*.db
+prisma/*.db-journal
+.idea/
+.vscode/
+!.vscode/extensions.json

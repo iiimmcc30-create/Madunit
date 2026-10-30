@@ -1,0 +1,41 @@
+{
+	auto_https disable_redirects
+}
+
+{$DOMAIN:madunitstore.com}, www.{$DOMAIN:madunitstore.com} {
+	encode gzip
+
+	handle /9aad21dea1b1568e816215a7159a6c038eb5d98555967fc52194396db900f3b6.txt {
+		header Content-Type "text/plain"
+		header Cache-Control "no-store"
+		root * /srv/landing
+		file_server
+	}
+
+	@bot {
+		path /telegram/* /dashboard /dashboard/* /health /ready
+		path /favicon.svg /og.svg /logo.svg
+		path /login /logout /stores /stores/* /subscriptions /subscriptions/* /inquiries /payments /stats /unmatched /scrims/* /scrim-templates/*
+	}
+	handle @bot {
+		reverse_proxy bot:3780
+	}
+
+	handle {
+		root * /srv/landing
+		try_files {path} {path}/ /index.html
+		file_server
+	}
+}
+
+http://{$DOMAIN:madunitstore.com}, http://www.{$DOMAIN:madunitstore.com} {
+	handle /9aad21dea1b1568e816215a7159a6c038eb5d98555967fc52194396db900f3b6.txt {
+		header Content-Type "text/plain"
+		header Cache-Control "no-store"
+		root * /srv/landing
+		file_server
+	}
+	handle {
+		redir https://{host}{uri} permanent
+	}
+}
