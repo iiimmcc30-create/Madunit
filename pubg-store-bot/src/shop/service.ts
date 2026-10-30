@@ -212,7 +212,7 @@ export class ShopService {
   listPublished() {
     return this.db.product.findMany({
       where: { status: "PUBLISHED" },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
       include: { variants: { where: { active: true }, orderBy: { priceSar: "asc" } } },
     });
   }
@@ -267,10 +267,12 @@ export class ShopService {
         subtotalSar: new Prisma.Decimal(subtotal),
         shippingSar: new Prisma.Decimal(shipping),
         totalSar: new Prisma.Decimal(subtotal + shipping),
+        manualFulfilment: lines.some((l) => byId.get(l.variantId)?.product.supplier === "manual"),
         items: { create: lines },
       },
     });
     await this.notify(`🛒 طلب جديد ${order.number}\n${name} — ${city}\nالمجموع: ${order.totalSar.toNumber()} ريال\nبانتظار التحويل.`);
+    if (order.manualFulfilment) await this.notifyManual(order.id, "طلب جديد — بانتظار التحويل");
     return order;
   }
 
@@ -285,6 +287,43 @@ export class ShopService {
       data: { receiptMime: mime, receiptData: data, receiptUploadedAt: new Date(), status: "RECEIPT_UPLOADED" },
     });
     await this.notify(`🧾 إيصال جديد للطلب ${order.number} (${order.totalSar.toNumber()} ريال). راجعه من لوحة المتجر.`);
+    if (order.manualFulfilment) await this.notifyManual(order.id, "تم رفع الإيصال — راجع التحويل");
+  }
+
+  /** Admin alert for orders with supplier="manual" items: buy them by hand from our other store. */
+  async notifyManual(orderId: string, stage: string) {
+    const o = await this.db.order.findUnique({
+      where: { id: orderId },
+      include: { items: { include: { variant: { include: { product: true } } } } },
+    });
+    if (!o) return;
+    const manual = o.items.filter((i) => i.variant.product.supplier === "manual");
+    if (!manual.length) return;
+    const address = [o.city, o.district, o.street, o.postalCode].filter(Boolean).join("، ");
+    await this.notify(
+      `🛍️ طلب يحتاج شراء يدوي من متجرنا الثاني (${stage})\n` +
+        `رقم الطلب: ${o.number}\n` +
+        manual.map((i) => `• ${i.variant.product.titleAr || i.title} × ${i.quantity}`).join("\n") +
+        `\nالعميل: ${o.customerName}\nالجوال: ${o.phone}\nالعنوان: ${address}` +
+        (o.notes ? `\nملاحظات: ${o.notes}` : "") +
+        (manual.length < o.items.length ? `\n(باقي المنتجات تنرسل لـ CJ تلقائياً)` : ""),
+    );
+  }
+
+  /** Admin records tracking / shipped / delivered for the manual part of an order. */
+  async setManualFulfilment(orderId: string, tracking: string | undefined, status: "SHIPPED" | "DELIVERED" | undefined) {
+    const o = await this.db.order.findUniqueOrThrow({ where: { id: orderId } });
+    if (!o.manualFulfilment) throw new ShopError("الطلب ما فيه منتجات يدوية.");
+    const t = tracking?.trim().slice(0, 500);
+    const allManual = !o.cjOrderId;
+    await this.db.order.update({
+      where: { id: orderId },
+      data: {
+        ...(t !== undefined ? { manualTracking: t || null } : {}),
+        ...(status ? { manualShippedAt: o.manualShippedAt ?? new Date() } : {}),
+        ...(status && allManual ? { status } : {}),
+      },
+    });
   }
 
   /** Marks paid and pushes the order to CJ. Idempotent: won't create a second CJ order. */
@@ -297,15 +336,19 @@ export class ShopService {
         data: { status: "PAID", paidAt: new Date(), paidBy: actor, paymentRef: paymentRef ?? order.paymentRef },
       });
     }
+    if (order.manualFulfilment && !order.paidAt) await this.notifyManual(orderId, "✅ تم تأكيد الدفع — اطلبه الحين");
     if (!order.cjOrderId) await this.pushToCj(orderId);
   }
 
   async pushToCj(orderId: string) {
     const order = await this.db.order.findUniqueOrThrow({
       where: { id: orderId },
-      include: { items: { include: { variant: true } } },
+      include: { items: { include: { variant: { include: { product: true } } } } },
     });
     if (order.cjOrderId) return order.cjOrderId;
+    // Manual-supplier items are never sent to CJ.
+    const cjItems = order.items.filter((i) => i.variant.product.supplier !== "manual");
+    if (!cjItems.length) return null;
     if (!this.cjEnabled) {
       await this.setStatus(orderId, "CJ_FAILED");
       await this.notify(`⚠️ الطلب ${order.number} مدفوع لكن CJ_API_KEY غير مضبوط.`);
@@ -325,7 +368,7 @@ export class ShopService {
       fromCountryCode: "CN",
       payType: this.config.cjPayType,
       remark: order.notes || undefined,
-      products: order.items.map((i) => ({ vid: i.variant.cjVid, quantity: i.quantity, storeLineItemId: i.id })),
+      products: cjItems.map((i) => ({ vid: i.variant.cjVid, quantity: i.quantity, storeLineItemId: i.id })),
     };
     try {
       const res = await this.cj().createOrder(payload);

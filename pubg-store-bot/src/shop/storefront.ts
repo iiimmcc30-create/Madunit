@@ -1,4 +1,5 @@
 import type { Order, OrderItem, Product, ProductVariant } from "@prisma/client";
+import { CAROUSEL_CSS, CAROUSEL_JS, carouselHtml } from "./carousel";
 import { bankTransfer } from "./service";
 
 export function esc(input: unknown): string {
@@ -32,6 +33,11 @@ const SHOP_CSS = `
 .note{color:var(--mu);font-size:15px}
 .alert{border:1px solid var(--ok-line);background:var(--ok-soft);border-radius:var(--r-sm);padding:14px}
 .err{color:#fca5a5}
+.was{color:var(--mu);text-decoration:line-through;font-size:15px;margin-inline-start:8px;font-weight:500}
+.feat{position:absolute;top:10px;inset-inline-start:10px;background:#3b82f6;color:#fff;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700}
+.pcard{position:relative}
+.promo2{display:block;margin:22px 0;border-radius:18px;overflow:hidden}.promo2 img{width:100%;height:auto;display:block}
+${CAROUSEL_CSS}
 .cart-link b{background:var(--ac);color:#fff;border-radius:99px;padding:0 8px;margin-inline-start:4px;font-size:13px}
 `;
 
@@ -44,12 +50,28 @@ function badge(){var n=get().reduce(function(s,x){return s+x.quantity},0);docume
 document.addEventListener('DOMContentLoaded',badge);return{get:get,set:set,add:add,badge:badge}})();
 `;
 
-export function shopPage(title: string, body: string, opts?: { description?: string; script?: string }): string {
+export const SITE = "https://madunitstore.com";
+export const SITE_TITLE = "Mad Unit Store | متجر إكسسوارات ألعاب الجوال";
+export const SITE_DESCRIPTION =
+  "Mad Unit Store (ماد يونت): متجر إكسسوارات ألعاب الجوال في السعودية — مبردات جوال وآيباد، أصابع ببجي وملحقات القيمرز بتوصيل لكل المدن، وبيع وشراء حسابات الألعاب بأمان عبر تيليجرام.";
+const abs = (u: string) => (/^https?:/.test(u) ? u : SITE + u);
+const SITE_JSONLD = JSON.stringify([
+  { "@context": "https://schema.org", "@type": "WebSite", name: "Mad Unit Store", alternateName: "ماد يونت", url: SITE + "/" },
+  { "@context": "https://schema.org", "@type": "Organization", name: "Mad Unit Store", alternateName: "ماد يونت", url: SITE + "/", logo: SITE + "/assets/logo.png", sameAs: ["https://t.me/MadUnitStore"] },
+]).replace(/</g, "\\u003c");
+
+export function shopPage(title: string, body: string, opts?: { description?: string; script?: string; image?: string; fullTitle?: string }): string {
+  const fullTitle = opts?.fullTitle ?? `${title} | Mad Unit Store`;
+  const desc = opts?.description ?? SITE_DESCRIPTION;
   return `<!doctype html>
 <html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)} — متجر ماد يونيت</title>
-<meta name="description" content="${esc(opts?.description ?? "متجر ماد يونيت — ملحقات وإكسسوارات ألعاب الجوال بتوصيل لكل مدن السعودية")}">
+<title>${esc(fullTitle)}</title>
+<meta name="description" content="${esc(desc)}">
+<meta property="og:site_name" content="Mad Unit Store"><meta property="og:type" content="website"><meta property="og:locale" content="ar_SA">
+<meta property="og:title" content="${esc(fullTitle)}"><meta property="og:description" content="${esc(desc)}">
+<meta property="og:image" content="${esc(opts?.image ? abs(opts.image) : SITE + "/assets/logo.png")}"><meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">${SITE_JSONLD}</script>
 <link rel="icon" href="/favicon.ico?v=10"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=10"><meta name="theme-color" content="#000000"><link rel="stylesheet" href="/css/site.css?v=10">
 <style>${SHOP_CSS}</style>
 <script>${CART_JS}</script>
@@ -73,6 +95,12 @@ function title(p: Product) {
   return p.titleAr || p.titleEn;
 }
 
+function priceHtml(p: ProductWithVariants): string {
+  const now = fromPrice(p);
+  const was = p.compareAtSar?.toNumber();
+  return `${now} ر.س${was && was > now ? `<s class="was">${was} ر.س</s>` : ""}`;
+}
+
 function fromPrice(p: ProductWithVariants): number {
   const prices = p.variants.map((v) => v.priceSar.toNumber());
   return prices.length ? Math.min(...prices) : p.priceSar.toNumber();
@@ -81,16 +109,18 @@ function fromPrice(p: ProductWithVariants): number {
 export function productListHtml(products: ProductWithVariants[]): string {
   const cards = products
     .map(
-      (p) => `<a class="pcard" href="/shop/p/${esc(p.slug)}">
+      (p) => `<a class="pcard" href="/shop/p/${esc(p.slug)}">${p.featured ? `<span class="feat">مميز</span>` : ""}
   <img src="${esc(p.images[0] ?? "/assets/logo.jpg")}" alt="${esc(title(p))}" loading="lazy">
-  <div class="pb"><h3>${esc(title(p))}</h3><span class="price">${fromPrice(p)} ر.س</span></div></a>`,
+  <div class="pb"><h3>${esc(title(p))}</h3><span class="price">${priceHtml(p)}</span></div></a>`,
     )
     .join("");
   return shopPage(
     "المتجر",
-    `<section class="sec"><p class="eyebrow">إكسسوارات الألعاب والجوال</p><h1>متجر ماد يونيت</h1>
+    `${carouselHtml()}<section class="sec"><p class="eyebrow">إكسسوارات الألعاب والجوال</p><h1>متجر ماد يونيت</h1>
 <p class="lead">منتجات مختارة للاعبين، توصيل لكل مدن المملكة.</p>
-${products.length ? `<div class="shop-grid">${cards}</div>` : `<p class="note">ما فيه منتجات منشورة حالياً. ارجع قريب!</p>`}</section>`,
+${products.length ? `<div class="shop-grid">${cards}</div>` : `<p class="note">ما فيه منتجات منشورة حالياً. ارجع قريب!</p>`}
+<a class="promo2" href="/shop/p/memo-cx08-pro"><img src="/uploads/shop/banner2.jpg" alt="العب بدون حرارة ولا تعليق" loading="lazy"></a></section>`,
+    { script: CAROUSEL_JS, fullTitle: SITE_TITLE },
   );
 }
 
@@ -114,7 +144,7 @@ document.getElementById('added').hidden=false};`;
 <div class="gallery"><img id="main-img" src="${esc(images[0])}" alt="${esc(title(p))}">
 <div class="thumbs">${images.slice(0, 8).map((i) => `<img src="${esc(i)}" alt="" loading="lazy">`).join("")}</div></div>
 <div><h1>${esc(title(p))}</h1>
-<p class="price" id="price">${fromPrice(p)} ر.س</p>
+<p class="price"><span id="price">${fromPrice(p)} ر.س</span>${p.compareAtSar && p.compareAtSar.toNumber() > fromPrice(p) ? `<s class="was">${p.compareAtSar.toNumber()} ر.س</s>` : ""}</p>
 <div class="shop-form">
 ${p.variants.length > 1 ? `<label>الخيار<select id="variant">${opts}</select></label>` : `<select id="variant" hidden>${opts}</select>`}
 <label>الكمية<input id="qty" class="qty" type="number" min="1" max="20" value="1"></label>
@@ -122,9 +152,9 @@ ${p.variants.length > 1 ? `<label>الخيار<select id="variant">${opts}</sele
 <p id="added" class="alert" hidden>انضاف للسلة ✓ <a href="/shop/cart">روح للسلة</a></p>
 </div>
 ${desc ? `<div class="card" style="margin-top:18px"><p>${esc(desc).replace(/\n/g, "<br>")}</p></div>` : ""}
-<p class="note">الشحن لكل مدن السعودية خلال ٧–١٥ يوم عمل تقريباً.</p>
+<p class="note">الشحن لكل مدن السعودية خلال ${p.supplier === "manual" ? "٧–١٤ يوم" : "٧–١٥ يوم عمل تقريباً"}.</p>
 </div></div>`,
-    { description: title(p), script },
+    { description: (p.descriptionAr || title(p)).replace(/\s+/g, " ").slice(0, 155), script, image: images[0] },
   );
 }
 
@@ -189,7 +219,7 @@ var j=await r.json().catch(function(){return{}});if(r.ok){location.reload()}else
   return shopPage(
     `الطلب ${order.number}`,
     `<section class="sec narrow"><h1>طلبك <span dir="ltr">${esc(order.number)}</span></h1>
-<p class="alert">الحالة: <b>${esc(STATUS_AR[order.status] ?? order.status)}</b>${order.trackingNumber ? `<br>رقم التتبع: <b dir="ltr">${esc(order.trackingNumber)}</b>` : ""}</p>
+<p class="alert">الحالة: <b>${esc(STATUS_AR[order.status] ?? order.status)}</b>${order.trackingNumber ? `<br>رقم التتبع: <b dir="ltr">${esc(order.trackingNumber)}</b>` : ""}${order.manualTracking ? `<br>تتبع الشحنة: ${/^https?:\/\//.test(order.manualTracking) ? `<a dir="ltr" href="${esc(order.manualTracking)}" target="_blank" rel="noopener">${esc(order.manualTracking)}</a>` : `<b dir="ltr">${esc(order.manualTracking)}</b>`}` : ""}</p>
 <div class="card"><ul>${order.items.map((i) => `<li>${esc(i.title)} × ${i.quantity} — ${i.unitPriceSar.toNumber() * i.quantity} ر.س</li>`).join("")}</ul>
 <p>المجموع: <b class="price">${total} ر.س</b></p>
 <p class="note">التوصيل إلى: ${esc(order.customerName)} — ${esc(order.city)}${order.district ? `، ${esc(order.district)}` : ""}</p></div>

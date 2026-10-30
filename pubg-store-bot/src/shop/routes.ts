@@ -131,6 +131,8 @@ export async function handleShopPublic(
   }
 }
 
+const MANUAL_BADGE = `<span style="background:#f59e0b;color:#000;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:700">توريد يدوي</span>`;
+
 const STATUS_LABEL: Record<string, string> = {
   PENDING_PAYMENT: "بانتظار التحويل",
   RECEIPT_UPLOADED: "إيصال مرفوع",
@@ -176,6 +178,13 @@ export async function handleShopAdmin(
         redirect(res, dash(`/shop/products/${pa[1]}`));
         return true;
       }
+      const mf = inner.match(/^\/shop\/orders\/([^/]+)\/manual$/);
+      if (mf) {
+        const st = form.status === "SHIPPED" || form.status === "DELIVERED" ? form.status : undefined;
+        await shop.setManualFulfilment(mf[1], form.tracking, st);
+        redirect(res, dash(`/shop/orders/${mf[1]}`));
+        return true;
+      }
       const oa = inner.match(/^\/shop\/orders\/([^/]+)\/(paid|retry|cancel|sync)$/);
       if (oa) {
         if (oa[2] === "paid") await shop.markPaid(oa[1], user, form.paymentRef);
@@ -192,7 +201,7 @@ export async function handleShopAdmin(
       const products = await db.product.findMany({ orderBy: { createdAt: "desc" }, include: { _count: { select: { variants: true } } } });
       const rows = products
         .map(
-          (p) => `<tr><td><a href="${dash(`/shop/products/${p.id}`)}">${escapeHtml(p.titleAr || p.titleEn)}</a><br><code>${escapeHtml(p.cjPid)}</code></td>
+          (p) => `<tr><td><a href="${dash(`/shop/products/${p.id}`)}">${escapeHtml(p.titleAr || p.titleEn)}</a><br><code>${escapeHtml(p.cjPid)}</code>${p.supplier === "manual" ? ` ${MANUAL_BADGE}` : ""}${p.featured ? " ⭐" : ""}</td>
 <td>${p.costUsd.toNumber()}$</td><td>${p.markupPercent.toNumber()}%</td><td>${p.priceSar.toNumber()} ر.س</td><td>${p._count.variants}</td><td>${escapeHtml(p.status)}</td></tr>`,
         )
         .join("");
@@ -235,7 +244,7 @@ ${p.variants.map((v) => `<tr><td>${escapeHtml(v.name)}</td><td>${escapeHtml(v.sk
       const orders = await db.order.findMany({ orderBy: { createdAt: "desc" }, take: 100 });
       const body = `<h1>طلبات المتجر</h1><p><a href="${dash("/shop")}">← المنتجات</a></p>
 <table><tr><th>الرقم</th><th>العميل</th><th>المدينة</th><th>المجموع</th><th>الحالة</th><th>CJ</th><th>التتبع</th><th>التاريخ</th></tr>
-${orders.map((o) => `<tr><td><a href="${dash(`/shop/orders/${o.id}`)}">${escapeHtml(o.number)}</a></td><td>${escapeHtml(o.customerName)}</td><td>${escapeHtml(o.city)}</td><td>${o.totalSar.toNumber()}</td><td>${escapeHtml(STATUS_LABEL[o.status] ?? o.status)}</td><td>${escapeHtml(o.cjOrderId ?? "—")}</td><td>${escapeHtml(o.trackingNumber ?? "—")}</td><td>${o.createdAt.toISOString().slice(0, 16).replace("T", " ")}</td></tr>`).join("") || `<tr><td colspan="8">ما فيه طلبات.</td></tr>`}</table>`;
+${orders.map((o) => `<tr><td><a href="${dash(`/shop/orders/${o.id}`)}">${escapeHtml(o.number)}</a>${o.manualFulfilment ? `<br>${MANUAL_BADGE}` : ""}</td><td>${escapeHtml(o.customerName)}</td><td>${escapeHtml(o.city)}</td><td>${o.totalSar.toNumber()}</td><td>${escapeHtml(STATUS_LABEL[o.status] ?? o.status)}</td><td>${escapeHtml(o.cjOrderId ?? "—")}</td><td>${escapeHtml(o.trackingNumber ?? o.manualTracking ?? "—")}</td><td>${o.createdAt.toISOString().slice(0, 16).replace("T", " ")}</td></tr>`).join("") || `<tr><td colspan="8">ما فيه طلبات.</td></tr>`}</table>`;
       html(res, 200, page("الطلبات", body));
       return true;
     }
@@ -251,17 +260,22 @@ ${orders.map((o) => `<tr><td><a href="${dash(`/shop/orders/${o.id}`)}">${escapeH
 
     const od = inner.match(/^\/shop\/orders\/([^/]+)$/);
     if (od) {
-      const o = await db.order.findUnique({ where: { id: od[1] }, include: { items: { include: { variant: true } } } });
+      const o = await db.order.findUnique({ where: { id: od[1] }, include: { items: { include: { variant: { include: { product: true } } } } } });
       if (!o) return false;
       const act = (a: string, label: string, confirmMsg?: string) =>
         `<form method="post" action="${dash(`/shop/orders/${o.id}/${a}`)}"${confirmMsg ? ` onsubmit="return confirm('${confirmMsg}')"` : ""}>${a === "paid" ? `<input name="paymentRef" placeholder="مرجع التحويل (اختياري)">` : ""}<button>${label}</button></form>`;
+      const manualForm = o.manualFulfilment
+        ? `<div class="card" style="border-color:#f59e0b"><p>${MANUAL_BADGE} هذا الطلب فيه منتجات تنطلب يدوياً من متجرنا الثاني (ما تنرسل لـ CJ).${o.manualShippedAt ? ` · شُحن يدوياً: ${o.manualShippedAt.toISOString().slice(0, 16).replace("T", " ")}` : ""}</p>
+<form method="post" action="${dash(`/shop/orders/${o.id}/manual`)}"><p>رقم/رابط التتبع<br><input name="tracking" value="${escapeHtml(o.manualTracking ?? "")}" style="width:100%" dir="ltr"></p>
+<p><select name="status"><option value="">حفظ التتبع فقط</option><option value="SHIPPED">تم الشحن</option><option value="DELIVERED">تم التوصيل</option></select> <button>حفظ</button></p></form></div>`
+        : "";
       const body = `<h1>الطلب ${escapeHtml(o.number)}</h1><p><a href="${dash("/shop/orders")}">← الطلبات</a></p>
 <div class="card"><p>الحالة: <b>${escapeHtml(STATUS_LABEL[o.status] ?? o.status)}</b> · المجموع: <b>${o.totalSar.toNumber()} ر.س</b></p>
 <p>${escapeHtml(o.customerName)} · <span dir="ltr">${escapeHtml(o.phone)}</span><br>${escapeHtml(o.city)} — ${escapeHtml(o.district)} — ${escapeHtml(o.street)} ${escapeHtml(o.postalCode)}</p>
 ${o.notes ? `<p>ملاحظات: ${escapeHtml(o.notes)}</p>` : ""}
 <p>CJ: ${escapeHtml(o.cjOrderId ?? "—")} (${escapeHtml(o.cjOrderStatus ?? "")}) · تتبع: ${escapeHtml(o.trackingNumber ?? "—")} ${escapeHtml(o.trackingStatus ?? "")}</p>
-<p>الإيصال: ${o.receiptUploadedAt ? `<a href="${dash(`/shop/orders/${o.id}/receipt`)}" target="_blank">عرض الإيصال</a>` : "لم يُرفع"}</p></div>
-<table><tr><th>المنتج</th><th>VID</th><th>الكمية</th><th>السعر</th></tr>${o.items.map((i) => `<tr><td>${escapeHtml(i.title)}</td><td><code>${escapeHtml(i.variant.cjVid)}</code></td><td>${i.quantity}</td><td>${i.unitPriceSar.toNumber()}</td></tr>`).join("")}</table>
+${manualForm}<p>الإيصال: ${o.receiptUploadedAt ? `<a href="${dash(`/shop/orders/${o.id}/receipt`)}" target="_blank">عرض الإيصال</a>` : "لم يُرفع"}</p></div>
+<table><tr><th>المنتج</th><th>VID</th><th>الكمية</th><th>السعر</th></tr>${o.items.map((i) => `<tr><td>${escapeHtml(i.title)}</td><td><code>${escapeHtml(i.variant.cjVid)}</code>${i.variant.product.supplier === "manual" ? ` ${MANUAL_BADGE}` : ""}</td><td>${i.quantity}</td><td>${i.unitPriceSar.toNumber()}</td></tr>`).join("")}</table>
 <div class="row-actions">
 ${!o.paidAt && o.status !== "CANCELLED" ? act("paid", "تأكيد الدفع وإرسال لـ CJ", "متأكد إن التحويل وصل؟") : ""}
 ${o.status === "CJ_FAILED" ? act("retry", "إعادة المحاولة مع CJ") : ""}

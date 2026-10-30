@@ -511,6 +511,11 @@ model Product {
   /// CJ shipping estimate to SA (SAR) baked into priceSar
   shippingSar   Decimal          @default(0) @db.Decimal(12, 2)
   status        ProductStatus    @default(DRAFT)
+  /// "cj" = auto-ordered from CJ when paid; "manual" = admin buys/ships it by hand (never sent to CJ)
+  supplier      String           @default("cj")
+  /// struck-through "was" price shown on the storefront
+  compareAtSar  Decimal?         @db.Decimal(12, 2)
+  featured      Boolean          @default(false)
   raw           Json?
   variants      ProductVariant[]
   createdAt     DateTime         @default(now())
@@ -562,6 +567,10 @@ model Order {
   logisticName      String?
   trackingNumber    String?
   trackingStatus    String?
+  /// true when the order has at least one supplier="manual" item
+  manualFulfilment  Boolean         @default(false)
+  manualTracking    String?
+  manualShippedAt   DateTime?
   lastSyncedAt      DateTime?
   items             OrderItem[]
   createdAt         DateTime        @default(now())
