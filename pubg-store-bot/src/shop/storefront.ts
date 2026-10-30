@@ -49,19 +49,19 @@ export function shopPage(title: string, body: string, opts?: { description?: str
 <html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} — متجر ماد يونيت</title>
-<meta name="description" content="${esc(opts?.description ?? "متجر ماد يونيت — إكسسوارات الألعاب والجوال بتوصيل لكل مدن السعودية")}">
-<link rel="icon" href="/favicon.ico?v=9"><link rel="stylesheet" href="/css/site.css?v=9">
+<meta name="description" content="${esc(opts?.description ?? "متجر ماد يونيت — ملحقات وإكسسوارات ألعاب الجوال بتوصيل لكل مدن السعودية")}">
+<link rel="icon" href="/favicon.ico?v=10"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=10"><meta name="theme-color" content="#000000"><link rel="stylesheet" href="/css/site.css?v=10">
 <style>${SHOP_CSS}</style>
 <script>${CART_JS}</script>
 </head><body>
 <header class="top"><div class="wrap nav">
- <a class="brand" href="/"><img src="/assets/logo.jpg?v=9" alt="شعار Mad Unit Store" width="40" height="40"><span>متجر ماد يونيت</span></a>
- <nav id="site-nav" aria-label="القائمة"><a href="/shop">المتجر</a><a class="cart-link" href="/shop/cart">السلة<b data-cart-count>0</b></a><a href="/">الرئيسية</a></nav>
+ <a class="brand" href="/"><img src="/assets/logo.jpg?v=10" alt="شعار Mad Unit Store" width="40" height="40"><span>Mad Unit Store</span></a>
+ <nav id="site-nav" aria-label="القائمة"><a href="/shop">المتجر</a><a class="cart-link" href="/shop/cart">السلة<b data-cart-count>0</b></a><a href="/#accounts">بيع وشراء الحسابات</a><a href="/">الرئيسية</a></nav>
 </div></header>
 <main id="main" class="wrap">${body}</main>
 <footer class="foot"><div class="wrap">
- <p>© 2026 متجر ماد يونيت — جميع الحقوق محفوظة · س.ت 7053799925</p>
- <p class="links"><a href="https://t.me/MadUnitStore" target="_blank" rel="noopener">t.me/MadUnitStore</a> · <a href="https://wa.me/966557345682" target="_blank" rel="noopener">واتساب</a></p>
+ <p>© 2026 متجر ماد يونيت — متجر ملحقات وإكسسوارات ألعاب الجوال — جميع الحقوق محفوظة · س.ت 7053799925</p>
+ <p class="links"><a href="https://t.me/MadUnitStore" target="_blank" rel="noopener">t.me/MadUnitStore</a> · <a href="https://t.me/iir8rr" target="_blank" rel="noopener">@iir8rr</a> · <a class="ph" href="tel:+966557345682">0557345682</a> · <a href="https://wa.me/966557345682" target="_blank" rel="noopener">واتساب</a></p>
 </div></footer>
 ${opts?.script ? `<script>${opts.script}</script>` : ""}
 </body></html>`;

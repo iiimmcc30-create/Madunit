@@ -337,3 +337,40 @@ a:focus-visible,button:focus-visible{
     transform:none;
   }
 }
+
+/* ===== MAD UNIT brand identity v10 ===== */
+:root{--bg:#000;--bg2:#05070d;--surface:#0b0f19;--card:rgba(10,14,24,.85);--line:rgba(90,160,255,.16);--line-strong:rgba(90,160,255,.38);--tx:#f3f6fc;--mu:#9aa9c4;--ac:#1e4fd8;--ac2:#5aa0ff;--grad:linear-gradient(135deg,#1e4fd8 0%,#3b7bf0 50%,#5aa0ff 100%);--glow:0 0 40px rgba(30,79,216,.45)}
+body{background:#000 radial-gradient(1200px 600px at 85% -10%,rgba(30,79,216,.18),transparent 60%)}
+.top{background:rgba(0,0,0,.78);border-bottom:1px solid rgba(90,160,255,.18)}
+.brand span{font-weight:300;letter-spacing:.18em;text-transform:uppercase;font-size:15px}
+.brand img{border-radius:10px;box-shadow:0 0 0 1px rgba(90,160,255,.35),0 0 20px rgba(30,79,216,.45)}
+h1,h2{font-weight:300;letter-spacing:.06em;color:#fff}
+h2{position:relative;padding-bottom:12px}
+h2::after{content:"";position:absolute;bottom:0;inset-inline-start:0;width:64px;height:3px;border-radius:3px;background:var(--grad)}
+.kicker{display:block;font-size:13px;letter-spacing:.35em;text-transform:uppercase;color:var(--ac2);font-weight:500;margin-bottom:6px}
+.btn.primary,.btn-primary{background:var(--grad)!important;border:0!important;color:#fff!important;box-shadow:0 8px 28px rgba(30,79,216,.45)}
+.btn.ghost{border:1px solid var(--line-strong);color:#fff;background:transparent}
+.card,.feat,.contact{border-color:var(--line)}
+.price{color:#8ec0ff!important}
+.cart-link b{background:var(--grad)!important}
+.bhero{padding:22px 0 10px}
+.bhero .banner{display:block;border-radius:22px;overflow:hidden;border:1px solid rgba(90,160,255,.25);box-shadow:0 20px 60px rgba(30,79,216,.25)}
+.bhero .banner img{display:block;width:100%;height:auto}
+.bhero .copy{text-align:center;padding:26px 0 8px}
+.bhero h1{font-size:clamp(26px,4.4vw,46px);margin:.2em 0;line-height:1.35}
+.bhero .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:500}
+.bhero .lead{max-width:760px;margin:0 auto 18px;color:var(--mu)}
+.bhero .actions{justify-content:center}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-top:22px}
+.cat{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 12px;border-radius:18px;background:var(--card);border:1px solid var(--line);color:#fff;text-decoration:none;text-align:center;transition:border-color .2s,transform .2s}
+.cat:hover{border-color:var(--ac2);transform:translateY(-3px);color:#fff}
+.cat i{font-style:normal;font-size:30px}
+.cat small{color:var(--mu)}
+.accounts{background:linear-gradient(180deg,rgba(30,79,216,.10),rgba(0,0,0,0))}
+.acc-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
+@media(max-width:860px){.acc-grid{grid-template-columns:1fr}}
+.acc-grid img{border-radius:20px;border:1px solid var(--line-strong);width:100%;max-width:420px;margin:auto;display:block}
+.tg{display:inline-flex;align-items:center;gap:8px}
+.phone-big{font-size:22px;letter-spacing:.08em;color:#fff;text-decoration:none}
+.foot{border-top:1px solid rgba(90,160,255,.18)}
+.foot .ph{direction:ltr;unicode-bidi:isolate}
